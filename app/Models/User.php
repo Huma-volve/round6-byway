@@ -19,9 +19,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'username',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +48,57 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+
+
+
+    // A user may have ONE instructor profile
+    public function instructorProfile()
+    {
+        return $this->hasOne(InstructorProfile::class);
+    }
+
+    // A user may have ONE student profile
+    public function studentProfile()
+    {
+        return $this->hasOne(StudentProfile::class);
+    }
+
+    // An instructor can create MANY courses
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'instructor_id');
+    }
+
+    // A student can enroll in MANY courses
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    // A user can leave MANY reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // A user can place MANY orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // A user can have MANY payments THROUGH orders
+    public function payments()
+    {
+        return $this->hasManyThrough(Payment::class, Order::class);
+    }
+
+    // A user can have MANY wishlisted courses
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }
