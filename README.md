@@ -3,8 +3,8 @@
 ## 🚀 Overview
 This is a **Laravel 11 API project** for our team.  
 
-## 🛠 Setup Instructions
-1. Clone repo:
-   ```bash
-   git clone git@github.com:your-username/your-repo.git
-   cd your-repo
+You can clone the project using either **HTTPS** or **SSH**:
+
+- **HTTPS**  
+  ```bash
+  git clone https://github.com/Huma-volve/round6-byway.git
