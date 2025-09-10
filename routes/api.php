@@ -11,11 +11,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
+//Auth
 Route::post('register',[AuthController::class,'register']);
-// Route::post('login',[AuthController::class,'login']);
+Route::post('verify-email', [AuthController::class, 'verifyEmail']); 
+Route::post('login',[AuthController::class,'login']);
+Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
 
+// Admin routes
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
+});
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
 
 route::prefix('admin')->group(function () {
