@@ -15,6 +15,7 @@ class VerificationCode extends Model
         'type',
         'expires_at',
         'is_used',
+        
     ];
 
 
