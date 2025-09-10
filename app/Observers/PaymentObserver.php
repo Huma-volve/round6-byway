@@ -29,7 +29,6 @@ class PaymentObserver
     {
         Cache::forget('admin_dashboard_stats');
 
-        // Auto-fulfill successful course purchases
         if ($payment->wasChanged('status') && $payment->status === 'succeeded') {
             $order = $payment->order()->with(['items'])->first();
             if (!$order) {
