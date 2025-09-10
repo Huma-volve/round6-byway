@@ -16,11 +16,8 @@ class InstructorProfile extends Model
         'about',
         'skills',       // stored as string (comma separated) or JSON
         'experience',   // full experience description
-        'company_name',
-        'start_date',
-        'end_date',
         'social_links', // JSON
-        'image_path',
+        'image',
     ];
 
     protected $casts = [

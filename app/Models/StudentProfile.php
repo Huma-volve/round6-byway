@@ -14,7 +14,7 @@ class StudentProfile extends Model
         'headline',
         'about',
         'social_links',
-        'image_path',
+        'image',
     ];
 
 

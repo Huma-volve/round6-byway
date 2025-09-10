@@ -31,7 +31,7 @@ class AuthController extends Controller
                 'error' => $validate->errors()
             ],422);
         }
-        
+
 
 
 
@@ -60,7 +60,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::now()->addMinutes(10),
             'is_used' => false,
         ]);
-        
+
         Mail::to($user->email)->send(new VerificationMail($code));
 
         $token = $user->createToken('auth_token')->plainTextToken;
