@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+    use HasFactory;
 
     protected $fillable = [
         'order_id',
@@ -23,6 +25,8 @@ class Payment extends Model
 
     protected $casts = [
         'meta' => 'array', // store gateway payloads as JSON
+        'paid_at' => 'datetime',
+
     ];
 
     // Payment belongs to ONE order
