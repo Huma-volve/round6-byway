@@ -160,7 +160,18 @@ public function login(Request $request)
         'user' => $user,
         'token' => $token,
     ], 200);
-}
+    }
+    public function logout(Request $request){
+        // مسح التوكين الحالي
+    $request->user()->tokens()
+    ->where('id', $request->user()->currentAccessToken()->id)
+    ->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out successfully.'
+        ], 200);
+    }
+
 
 
 }
