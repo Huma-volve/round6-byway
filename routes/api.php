@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Dashboard\StatsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+Route::prefix('reviews')->group (function(){
+
+    Route::get('/',[ReviewController::class,'index']);
+    Route::get('/{id}',[ReviewController::class,'show']);
+    Route::delete('/{id}',[ReviewController::class,'destroy']);
+    Route::patch('/{id}/status',[ReviewController::class,'updateStatus']);
+
+});
 //Auth
 Route::post('register',[AuthController::class,'register']);
 Route::post('verify-email', [AuthController::class, 'verifyEmail']); 
@@ -23,7 +33,7 @@ Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
 });
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
+// Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
 
 route::prefix('admin')->group(function () {
     // Users management
@@ -57,4 +67,4 @@ route::prefix('admin')->group(function () {
 
 
 
-Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
+// Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
