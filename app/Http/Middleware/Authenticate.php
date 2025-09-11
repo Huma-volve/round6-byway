@@ -15,8 +15,8 @@ class Authenticate extends Middleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function redirectTo($request): ?string
-    {
-        return null;
-     }
+    public function handle(Request $request, Closure $next): Response
+{
+    return $next($request);   
+}
 }

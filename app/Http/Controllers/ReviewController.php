@@ -32,7 +32,7 @@ class ReviewController extends Controller
         $query->where('user_id', $request->user_id);
     }
 
-            $reviews =$query->paginate(10);;
+            $reviews =$query->paginate(10);
 
         return response()->json($reviews);
     }
@@ -42,7 +42,7 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -51,12 +51,23 @@ class ReviewController extends Controller
     public function show(string $id)
     {
         //
+        $query = Review::with(['user', 'course'])->find($id);
+
+        if (!$query) {
+            return response()->json([
+                'message' => 'Review not found'
+            ], 404);
+        }
+
+            $review =$query;
+        return response()->json($review);
+    
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
         //
     }
@@ -69,27 +80,27 @@ class ReviewController extends Controller
         //
 
         $review=Review::findOrFail($id);
-            /** @var \App\Models\User|null $user */
+            // /** @var \App\Models\User|null $user */
 
 
-        $user = auth()->user();
+        // $user = auth()->user();
 
         
         
-        if (!$user) {
-            # code...
-            return response()->json([
-                'message'=>'Unauthorized please Login'
-            ],401);
-        }
+        // if (!$user) {
+        //     # code...
+        //     return response()->json([
+        //         'message'=>'Unauthorized please Login'
+        //     ],401);
+        // }
         
         
-        if ($user->role !== 'admin') {
-            # code...
-            return response()->json([
-                'message'=>'Unauthorized '
-            ],403);
-        }
+        // if ($user->role !== 'admin') {
+        //     # code...
+        //     return response()->json([
+        //         'message'=>'Unauthorized '
+        //     ],403);
+        // }
 
           $review->delete();
 

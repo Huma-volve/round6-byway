@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::prefix('reviews')->middleware('auth:sanctum')->group (function(){
+Route::prefix('reviews')->group (function(){
 
     Route::get('/',[ReviewController::class,'index']);
     Route::get('/{id}',[ReviewController::class,'show']);

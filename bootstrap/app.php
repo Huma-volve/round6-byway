@@ -21,13 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions):void {
         //
-        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+        // $exceptions->render(function (AuthenticationException $exception, Request $request) {
 
-             return response()->json([
-                'message' => 'Unauthorized please Login'
-            ], 401);
+        //      return response()->json([
+        //         'message' => 'Unauthorized please Login'
+        //     ], 401);
 
 
                 
-        });
+        // });
     })->create();
