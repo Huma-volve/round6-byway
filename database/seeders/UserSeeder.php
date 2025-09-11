@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+
+use App\Models\{User, InstructorProfile, StudentProfile};
 
 class UserSeeder extends Seeder
 {
@@ -14,17 +14,20 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-         User::create([
-            'first_name' => 'Admin',
-            'last_name'  => 'User',
-            'username'   => 'admin',
-            'email'      => 'admin@example.com',
-            'password'   => Hash::make('password'),
-            'role'       => 'admin',
+        // Admin
+        User::factory()->create([
+            'email' => 'admin@example.com',
+            'role'  => 'admin',
         ]);
 
-        // 10 random users
-        User::factory(10)->create();
+        // Instructors
+        User::factory(20)->create(['role' => 'instructor'])->each(function ($user) {
+            InstructorProfile::factory()->create(['user_id' => $user->id]);
+        });
+
+        // Students
+        User::factory(100)->create(['role' => 'student'])->each(function ($user) {
+            StudentProfile::factory()->create(['user_id' => $user->id]);
+        });
     }
 }

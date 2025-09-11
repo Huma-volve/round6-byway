@@ -9,14 +9,15 @@ class Course extends Model
 {
         use HasFactory;
 
+
     protected $fillable = [
         'title',
         'description',
         'category_id',
         'instructor_id',
         'price',
-        'compared_price',
-        'image_path',
+        'compare_price',
+        'image',
         'lessons_count',
         'level',
         'duration_hours',

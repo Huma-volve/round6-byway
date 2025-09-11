@@ -25,6 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'email_verified_at'
+        'status',
     ];
 
     /**
@@ -52,7 +54,10 @@ class User extends Authenticatable
 
 
 
-
+public function verificationCodes()
+    {
+        return $this->hasMany(VerificationCode::class);
+    }
 
     // A user may have ONE instructor profile
     public function instructorProfile()
