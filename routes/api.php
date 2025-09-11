@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Dashboard\StatsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\CoursesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -52,6 +53,15 @@ route::prefix('admin')->group(function () {
     Route::patch('instructors/{instructor}/status', [InstructorsController::class, 'setStatus']);
     Route::post('instructors/{instructor}/disable', [InstructorsController::class, 'disable']);
     Route::delete('instructors/{instructor}', [InstructorsController::class, 'destroy']);
+
+    // Courses management
+    Route::get('courses', [CoursesController::class, 'index']);
+    Route::get('courses/{course}', [CoursesController::class, 'show']);
+    Route::patch('courses/{course}', [CoursesController::class, 'update']);
+    Route::patch('courses/{course}/status', [CoursesController::class, 'setStatus']);
+    Route::post('courses/{course}/approve', [CoursesController::class, 'approve']);
+    Route::post('courses/{course}/archive', [CoursesController::class, 'archive']);
+    Route::delete('courses/{course}', [CoursesController::class, 'destroy']);
 });
 
 
