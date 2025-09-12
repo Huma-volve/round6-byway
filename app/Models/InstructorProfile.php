@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class InstructorProfile extends Model
 {
+
+    use HasFactory;
 
     protected $fillable = [
         'user_id',
@@ -13,11 +16,8 @@ class InstructorProfile extends Model
         'about',
         'skills',       // stored as string (comma separated) or JSON
         'experience',   // full experience description
-        'company_name',
-        'start_date',
-        'end_date',
         'social_links', // JSON
-        'image_path',
+        'image',
     ];
 
     protected $casts = [

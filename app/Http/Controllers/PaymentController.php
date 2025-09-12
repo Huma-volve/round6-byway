@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+//use Illuminate\Container\Attributes\Auth;
 use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -16,13 +18,14 @@ class PaymentController extends Controller
             'currency' => 'string|in:usd,egp',
             'payment_method_id' => 'required|string',
         ]);
-        $user = User::find(1);
+        $user = Auth::user();
         $stripe = new StripeClient(config('services.stripe.secret'));
+        $order_id = $user->orders()->latest()->first()->id;
         DB::beginTransaction();
         try {
             $amountCents = (int) $request->amount_cents;
             $payment = $user->payments()->create([
-                'order_id' => 1, // مؤقتًا
+                'order_id' => $order_id, // مؤقتًا
                 'provider' => 'stripe',
                 'method' => 'card',
                 'amount_cents' => $amountCents,

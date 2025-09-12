@@ -7,6 +7,7 @@ use App\Models\User;
 use Stripe\StripeClient;
 use Stripe\Stripe;
 use Stripe\PaymentMethod;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentMethodController extends Controller
 {
@@ -16,10 +17,17 @@ public function store(Request $request)
         'payment_method_id' => 'required|string',
     ]);
 
-    $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
+    $stripe = new StripeClient(config('services.stripe.secret'));
 
-    // مؤقتًا: هنستخدم user ثابت (ID = 1)
-    $user = User::find(1);
+    
+    $user = Auth::user();
+    if(!$user)
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'User not authenticated',
+        ], 401);
+    }
 
     // لو اليوزر ده مالوش customer في Stripe → نعمله
     if (!$user->stripe_customer_id) {
@@ -56,11 +64,18 @@ public function store(Request $request)
     ], 201);
 }
     
-public function listPaymentMethods($id)
+public function listPaymentMethods(Request $request)
 {
     try {
         // هات اليوزر من الداتابيس
-        $user = User::findOrFail($id);
+        $user = Auth::user();
+        if(!$user)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not authenticated',
+            ], 401);
+        }
 
         // هات الـ Payment Methods المخزنة عندك
         $methods = $user->paymentMethods()

@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+
+use App\Models\{Enrollment, Payment, Review, Course};
+use App\Observers\{EnrollmentObserver, PaymentObserver, ReviewObserver, CourseObserver};
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -20,5 +23,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        Enrollment::observe(EnrollmentObserver::class);
+        Course::observe(CourseObserver::class);
+        Payment::observe(PaymentObserver::class);
+        Review::observe(ReviewObserver::class);
     }
 }
