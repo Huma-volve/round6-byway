@@ -2,105 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Stripe\StripeClient;
 use Stripe\Stripe;
 use Stripe\PaymentMethod;
-use Illuminate\Support\Facades\Auth;
+use App\Services\PaymentMethodService;
+use App\Trait\AuthTrait;
 
 class PaymentMethodController extends Controller
 {
-public function store(Request $request)
-{
-    $request->validate([
-        'payment_method_id' => 'required|string',
-    ]);
-
-    $stripe = new StripeClient(config('services.stripe.secret'));
-
-    
-    $user = Auth::user();
-    if(!$user)
+    use AuthTrait;
+    protected PaymentMethodService $paymentMethodService;
+    public function __construct(PaymentMethodService $paymentMethodService)
     {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'User not authenticated',
-        ], 401);
+        $this->paymentMethodService = $paymentMethodService;
     }
-
-    // لو اليوزر ده مالوش customer في Stripe → نعمله
-    if (!$user->stripe_customer_id) {
-        $customer = $stripe->customers->create([
-            'email' => $user->email,
-            'name' => $user->name,
+    public function store(Request $request)
+    {
+        $request->validate([
+            'payment_method_id' => 'required|string',
         ]);
+        $user = $this->getAuthUser();
 
-        $user->stripe_customer_id = $customer->id;
-        $user->save();
+
+
+
+        try {
+            $method = $this->paymentMethodService->AddPaymentMethod($user, $request->payment_method_id);
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Payment method attached & saved successfully',
+                'data'    => $method,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    // نربط الـ payment method بالـ customer
-    $stripe->paymentMethods->attach(
-        $request->payment_method_id,
-        ['customer' => $user->stripe_customer_id]
-    );
+    public function listPaymentMethods(Request $request)
+    {
+        try {
+            $user = $this->getAuthUser();
 
-    // نجيب تفاصيل الـ payment method من Stripe
-    $paymentMethod = $stripe->paymentMethods->retrieve($request->payment_method_id);
 
-    // نخزن نسخة في جدول payment_methods
-    $method = $user->paymentMethods()->create([
-        'stripe_payment_method_id' => $paymentMethod->id,
-        'provider' => 'stripe',
-        'brand' => $paymentMethod->card->brand ?? null,
-        'last_four' => $paymentMethod->card->last4 ?? null,
-        'is_default' => $user->paymentMethods()->count() === 0, // أول كارت يبقى Default
-    ]);
+            // هات الـ Payment Methods المخزنة عندك
+            $methods = $user->paymentMethods()
+                ->select('id', 'brand', 'last_four', 'is_default', 'provider')
+                ->get();
 
-    return response()->json([
-        'message' => 'Payment method attached & saved successfully',
-        'data' => $method,
-    ], 201);
-}
-    
-public function listPaymentMethods(Request $request)
-{
-    try {
-        // هات اليوزر من الداتابيس
-        $user = Auth::user();
-        if(!$user)
-        {
+            return response()->json([
+                'status'           => 'success',
+                'payment_methods'  => $methods,
+                'message'          => $methods->isEmpty()
+                    ? 'No saved payment methods found for this user'
+                    : null,
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'User not authenticated',
-            ], 401);
+                'message' => $e->getMessage(),
+            ], 500);
         }
-
-        // هات الـ Payment Methods المخزنة عندك
-        $methods = $user->paymentMethods()
-            ->select('id', 'brand', 'last_four', 'is_default', 'provider')
-            ->get();
-
-        // لو مفيش أي كروت
-        if ($methods->isEmpty()) {
-            return response()->json([
-                'status' => 'success',
-                'payment_methods' => [],
-                'message' => 'No saved payment methods found for this user',
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'payment_methods' => $methods,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage(),
-        ], 500);
     }
-}
-
 }

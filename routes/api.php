@@ -13,17 +13,18 @@ use App\Http\Controllers\PaymentController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
+Route::middleware(['auth:sanctum'])->prefix('payment')->group(function(){
 //Payment methods
-Route::middleware(['auth:sanctum'])->group(function(){
 Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
-Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']
-);
+Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']);
+//Payment checkout
+Route::post('/checkout',[PaymentController::class,'checkout']);
+//View Payment History
+Route::get('payment-history',[Paymentcontroller::class,'PaymentHistory']);
+
 });
 
 
-//Payment checkout
-Route::post('/checkout',[PaymentController::class,'checkout'])->middleware('auth:sanctum');
 
 //Auth
 Route::post('register',[AuthController::class,'register']);
