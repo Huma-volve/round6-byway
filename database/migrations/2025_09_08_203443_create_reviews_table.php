@@ -21,7 +21,11 @@ return new class extends Migration
 
             $table->timestamps();
 
+
             $table->unique(['course_id', 'user_id']); // one review per user per course
+
+            $table->enum('status', ['Normal', 'Reported'])->default('Normal');
+            $table->softDeletes();
         });
     }
 
