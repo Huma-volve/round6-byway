@@ -8,7 +8,7 @@ use App\Models\Payment;
 use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
 use App\Services\PaymentService;
-use App\Trait\AuthTrait;
+use App\AuthTrait;
 
 class PaymentController extends Controller
 {
