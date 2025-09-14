@@ -46,11 +46,11 @@ class AuthController extends Controller
         'password'   => $request['password'],
 
         ]);
-        // if ($user->role === 'student') {
-        //     $user->studentProfile()->create([]);
-        // } elseif ($user->role === 'instructor') {
-        //     $user->instructorProfile()->create([]);
-        // }
+        if ($user->role === 'student') {
+            $user->studentProfile()->create([]);
+        } elseif ($user->role === 'instructor') {
+            $user->instructorProfile()->create([]);
+        }
 
 
         // $code = rand(100000, 999999);
@@ -125,45 +125,92 @@ class AuthController extends Controller
         ], 200);
     }
 
-public function login(Request $request)
-{
-    $validate = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required|string|min:6',
-    ]);
+    public function login(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
 
-    if ($validate->fails()) {
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validate->errors()
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Invalid email or password'
+            ], 401);
+        }
+
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Please verify your email before logging in.',
+                'action' => 'resend_verification'
+            ], 403);
+        }
+
+        // ✅ check account status
+        if ($user->status === 'blocked') {
+            $token = $user->createToken('reactivate_token')->plainTextToken;
+
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Your account is deactivated. Please reactivate.',
+                'token' => $token
+            ], 403);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'status' => 'failed',
-            'error' => $validate->errors()
-        ], 422);
+            'status' => 'success',
+            'message' => 'Login successful.',
+            'user' => $user,
+            'token' => $token,
+        ], 200);
     }
 
-    $user = User::where('email', $request->email)->first();
+    public function resendVerification(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Email already verified.'
+            ], 400);
+        }
+
+        // generate OTP جديد
+        $code = "000000";
+        $user->verificationCodes()->create([
+            'code' => $code,
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        // تبعت OTP على الإيميل
+        Mail::to($user->email)->send(new VerificationMail($code));
+
         return response()->json([
-            'status' => 'failed',
-            'message' => 'Invalid email or password'
-        ], 401);
+            'status' => 'success',
+            'message' => 'Verification code resent successfully.'
+        ], 200);
     }
-
-    if (is_null($user->email_verified_at)) {
-        return response()->json([
-            'status' => 'failed',
-            'message' => 'Please verify your email before logging in.'
-        ], 403);
-    }
-
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Login successful.',
-        'user' => $user,
-        'token' => $token,
-    ], 200);
-    }
+  
 
     public function logout(Request $request){
         // مسح التوكين الحالي
