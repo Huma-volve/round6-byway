@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
+
+
 class UserFactory extends Factory
 {
     /**
@@ -17,6 +19,9 @@ class UserFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+        protected static ?string $password;
+
     public function definition(): array
     {
         return [

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-        use HasFactory;
+    use HasFactory;
 
 
     protected $fillable = [
@@ -65,5 +65,22 @@ class Course extends Model
     public function orderItems()
     {
         return $this->morphMany(OrderItem::class, 'purchasable');
+    }
+
+
+    public function orders()
+{
+    return $this->hasMany(Order::class, 'course_id');
+}
+
+    public function payments()
+    {
+        return $this->hasManyThrough(
+            Payment::class,
+            Enrollment::class,
+            'course_id',  
+                'order_id',     
+            
+        );
     }
 }
