@@ -43,7 +43,7 @@ class AuthController extends Controller
         'username'  => $request['username'],
         'role'       => $request['role'],
         'email'      => $request['email'],
-        'password'   => $request['password'],
+        'password'   => Hash::make($request['password']),
 
         ]);
         if ($user->role === 'student') {
@@ -51,7 +51,6 @@ class AuthController extends Controller
         } elseif ($user->role === 'instructor') {
             $user->instructorProfile()->create([]);
         }
-
 
         // $code = rand(100000, 999999);
         $code = "000000";

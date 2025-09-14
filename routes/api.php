@@ -12,10 +12,24 @@ use App\Http\Controllers\StudentProfileController;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentMethodController;  
+use App\Http\Controllers\PaymentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum'])->prefix('payment')->group(function(){
+//Payment methods
+Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']);
+//Payment checkout
+Route::post('/checkout',[PaymentController::class,'checkout']);
+//View Payment History
+Route::get('payment-history',[Paymentcontroller::class,'PaymentHistory']);
+
+});
+
+
 
 
 Route::prefix('reviews')->group (function(){
@@ -43,7 +57,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 });
 // Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
 
-route::prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {
     // Users management
     Route::get('users', [UsersController::class, 'index']);
     Route::get('users/{user}', [UsersController::class, 'show']);
