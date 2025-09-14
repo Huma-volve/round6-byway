@@ -16,8 +16,7 @@ use App\Http\Controllers\StudentProfileController;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PaymentMethodController;  
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentMethodController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,7 +28,7 @@ Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymen
 //Payment checkout
 Route::post('/checkout',[PaymentController::class,'checkout']);
 //View Payment History
-Route::get('payment-history',[Paymentcontroller::class,'PaymentHistory']);
+Route::get('payment-history',[PaymentController::class,'PaymentHistory']);
 
 });
 
@@ -84,11 +83,7 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('verify-email', [AuthController::class, 'verifyEmail']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('register',[AuthController::class,'register']);
-Route::post('verify-email', [AuthController::class, 'verifyEmail']); 
-Route::post('login',[AuthController::class,'login']);
 Route::post('resend-verification', [AuthController::class, 'resendVerification']);
-Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
 
