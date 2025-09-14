@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Dashboard\StatsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\StudentProfileController;
+use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +30,7 @@ Route::prefix('reviews')->group (function(){
 Route::post('register',[AuthController::class,'register']);
 Route::post('verify-email', [AuthController::class, 'verifyEmail']); 
 Route::post('login',[AuthController::class,'login']);
+Route::post('resend-verification', [AuthController::class, 'resendVerification']);
 Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
@@ -67,6 +72,17 @@ route::prefix('admin')->group(function () {
     Route::delete('courses/{course}', [CoursesController::class, 'destroy']);
 });
 
+
+//StudentProfile
+Route::get('student/profile',[StudentProfileController::class,'show'])->middleware('auth:sanctum');
+Route::post('student/profile',[StudentProfileController::class,'update'])->middleware('auth:sanctum');
+
+//student's enrolled courses
+Route::get('my-courses',[EnrollmentController::class,'index'])->middleware('auth:sanctum');
+
+//close account
+Route::delete('account/close', [AccountController::class, 'closeAccount'])->middleware('auth:sanctum');
+Route::post('reactivate-account',[AccountController::class,'reactivate'])->middleware('auth:sanctum');
 
 
 
