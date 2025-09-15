@@ -11,26 +11,6 @@ use App\Services\MediaUploadService;
 Route::get('/', function () {
     return view('welcome');
 });
-
-
-
-// Route::get('/upload', function () {
-//     return view('uploads.upload');
-// });
-// Route::post('/upload', function (Request $request) {
-//     $request->validate([
-//         'file' => 'required|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov|max:10240',
-//     ]);
-
-//     $path = Storage::disk('cloudinary')->put('tests', $request->file('file'));
-//     $url  = Storage::disk('cloudinary')->url($path);
-
-//     return back()->with('uploaded_url', $url);
-// })->name('upload');
-
-
-
-
 Route::get('/upload-test', function () {
     return view('uploads.upload'); // we'll make a simple form view
 });
@@ -69,3 +49,16 @@ Route::post('/test-media-upload', function (Request $request) {
         ], 500);
     }
 });
+Route::get('/upload', function () {
+    return view('uploads.upload');
+});
+Route::post('/upload', function (Request $request) {
+     $request->validate([
+        'file' => 'required|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov|max:10240',
+    ]);
+
+    $path = Storage::disk('cloudinary')->put('tests', $request->file('file'));
+    $url  = Storage::disk('cloudinary')->url($path);
+
+    return back()->with('uploaded_url', $url);
+})->name('upload');
