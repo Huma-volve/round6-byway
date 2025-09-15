@@ -13,6 +13,10 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\StudentProfileController;
+
+use App\Http\Controllers\Instructor\InstructorCoursesController;
+use App\Http\Controllers\Instructor\InstructorLessonsController;
+
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -139,3 +143,30 @@ Route::post('reactivate-account',[AccountController::class,'reactivate'])->middl
 
 
 // Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
+
+
+
+
+
+
+
+
+// Instructor routes
+Route::middleware(['auth:sanctum'])
+    ->prefix('instructor')
+    ->group(function () {
+
+        // Course management routes
+        Route::post('courses', [InstructorCoursesController::class, 'store']);
+        Route::get('courses', [InstructorCoursesController::class, 'index']);
+        Route::get('courses/{course}', [InstructorCoursesController::class, 'show']);
+        Route::patch('courses/{course}', [InstructorCoursesController::class, 'update']);
+        Route::patch('courses/{course}/archive', [InstructorCoursesController::class, 'archive']);
+        Route::delete('courses/{course}', [InstructorCoursesController::class, 'destroy']);
+
+        // Lesson management routes
+        Route::post('courses/{course}/lessons', [InstructorLessonsController::class, 'store']);
+        Route::patch('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'update']);
+        Route::delete('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'destroy']);
+        Route::patch('courses/{course}/lessons/reorder', [InstructorLessonsController::class, 'reorder'])->name('courses.lessons.reorder');
+    });
