@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
 
-            $table->string('provider', 50); // stripe, paypal, paymob...
-            $table->string('method', 50);   // card, wallet, kiosk
+            $table->string('provider', 50)->default('stripe'); // stripe, paypal, paymob...
+            $table->string('method', 50)->default('card');   // card, wallet, kiosk
 
             $table->integer('amount_cents');
             $table->char('currency', 3)->default('USD');

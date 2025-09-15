@@ -88,6 +88,11 @@ public function verificationCodes()
     {
         return $this->hasMany(Review::class);
     }
+    //user can have many payment methods
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
 
     // A user can place MANY orders
     public function orders()

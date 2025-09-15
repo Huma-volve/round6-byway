@@ -11,21 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-
-            $table->unsignedTinyInteger('rating'); // 1–5
-            $table->text('comment')->nullable();
+            $table->string('stripe_payment_method_id')->unique();
+            $table->string('provider')->default('stripe');
+            $table->string('brand')->default('visa')->nullable();
+            $table->string('last_four', 4)->nullable();
+            $table->boolean('is_default')->default(false);
 
             $table->timestamps();
-
-
-            $table->unique(['course_id', 'user_id']); // one review per user per course
-
-            $table->enum('status', ['Normal', 'Reported'])->default('Normal');
-            $table->softDeletes();
         });
     }
 
@@ -34,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('payment_methods');
     }
 };

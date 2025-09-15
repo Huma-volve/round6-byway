@@ -1,31 +1,101 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Dashboard\StatsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\StudentProfileController;
+use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentMethodController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum'])->prefix('payment')->group(function(){
+//Payment methods
+Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']);
+//Payment checkout
+Route::post('/checkout',[PaymentController::class,'checkout']);
+//View Payment History
+Route::get('payment-history',[PaymentController::class,'PaymentHistory']);
+
+});
+
+
+
+//reviews
+Route::prefix('reviews')->group(function () {
+
+    Route::get('/', [ReviewController::class, 'index']);
+    Route::get('/{id}', [ReviewController::class, 'show']);
+    Route::delete('/{id}', [ReviewController::class, 'destroy']);
+    Route::patch('/{id}/status', [ReviewController::class, 'updateStatus']);
+});
+
+//platform settings
+
+//settings
+
+Route::prefix('settings')->group(function () {
+
+    Route::get('/', [SettingController::class, 'getSettings']);
+    Route::put('/{id}', [SettingController::class, 'updateSettings']);
+});
+
+
+//category
+Route::prefix('categories')->group(function () {
+
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::get('/{id}', [CategoryController::class, 'show']);
+    Route::post('/', [CategoryController::class, 'store']);
+    Route::put('/{id}', [CategoryController::class, 'update']);
+    Route::delete('/{id}', [CategoryController::class, 'destroy']);
+});
+
+
+//  Routes for Payments
+Route::apiResource('payments', PaymentController::class);
+
+// 🔹 Routes for Reports
+Route::prefix('reports')->group(function () {
+    Route::get('/user-growth', [ReportsController::class, 'userGrowth']);
+    Route::get('/course-revenue', [ReportsController::class, 'courseRevenue']);
+    Route::get('/instructor-performance', [ReportsController::class, 'instructorPerformance']);
+    Route::get('/payments/export/pdf', [ReportsController::class, 'exportPdf']);
+});
+
+
 
 //Auth
-Route::post('register',[AuthController::class,'register']);
-Route::post('verify-email', [AuthController::class, 'verifyEmail']); 
-Route::post('login',[AuthController::class,'login']);
-Route::post('logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
+Route::post('register', [AuthController::class, 'register']);
+Route::post('verify-email', [AuthController::class, 'verifyEmail']);
+Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('resend-verification', [AuthController::class, 'resendVerification']);
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
 
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
 });
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
+// Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {});
 
-route::prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {
     // Users management
     Route::get('users', [UsersController::class, 'index']);
     Route::get('users/{user}', [UsersController::class, 'show']);
@@ -55,6 +125,17 @@ route::prefix('admin')->group(function () {
 });
 
 
+//StudentProfile
+Route::get('student/profile',[StudentProfileController::class,'show'])->middleware('auth:sanctum');
+Route::post('student/profile',[StudentProfileController::class,'update'])->middleware('auth:sanctum');
+
+//student's enrolled courses
+Route::get('my-courses',[EnrollmentController::class,'index'])->middleware('auth:sanctum');
+
+//close account
+Route::delete('account/close', [AccountController::class, 'closeAccount'])->middleware('auth:sanctum');
+Route::post('reactivate-account',[AccountController::class,'reactivate'])->middleware('auth:sanctum');
 
 
-Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
+
+// Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
