@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 use App\Models\{Enrollment, Payment, Review, Course};
 use App\Observers\{EnrollmentObserver, PaymentObserver, ReviewObserver, CourseObserver};
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -27,5 +29,8 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Payment::observe(PaymentObserver::class);
         Review::observe(ReviewObserver::class);
+        Relation::morphMap([
+            'Course' => \App\Models\Course::class,
+        ]);
     }
 }
