@@ -58,9 +58,9 @@ class CourseSeeder extends Seeder
 
 
         // Create 50 courses
-        Course::factory(50)->create()->each(function ($course) {
+        Course::factory(10)->create()->each(function ($course) {
             // Lessons
-            $lessons = Lesson::factory(10)->create(['course_id' => $course->id]);
+            $lessons = Lesson::factory(5)->create(['course_id' => $course->id]);
             $course->update([
                 'lessons_count' => $lessons->count(),
                 'total_minutes' => $lessons->sum('duration_minutes'),
@@ -68,7 +68,7 @@ class CourseSeeder extends Seeder
             ]);
 
             // Enrollments for random students
-            $students = User::where('role', 'student')->inRandomOrder()->take(20)->get();
+            $students = User::where('role', 'student')->inRandomOrder()->take(10)->get();
 
             foreach ($students as $student) {
                 // ✅ Prevent duplicate enrollments

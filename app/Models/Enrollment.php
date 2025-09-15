@@ -33,4 +33,12 @@ class Enrollment extends Model
     {
         return $this->hasMany(LessonProgress::class);
     }
+
+
+    public function payments()
+{
+    return $this->hasMany(Payment::class, 'enrollment_id');
 }
+}
+
+
