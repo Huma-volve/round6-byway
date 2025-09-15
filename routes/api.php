@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportsController;
@@ -136,6 +137,10 @@ Route::get('my-courses',[EnrollmentController::class,'index'])->middleware('auth
 Route::delete('account/close', [AccountController::class, 'closeAccount'])->middleware('auth:sanctum');
 Route::post('reactivate-account',[AccountController::class,'reactivate'])->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('cart/add', [CartController::class, 'addToCart']);
+    Route::get('cart', [CartController::class, 'getCart']);
+});
 
 
 // Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
