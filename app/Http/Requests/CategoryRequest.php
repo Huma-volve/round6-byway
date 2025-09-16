@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePayoutMethodRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class StorePayoutMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
-        'provider' => 'required|string',     
-            'account_name' => 'required|string',
-            'account_number' => 'required|string',
-            'bank_name' => 'required|string',
-            'is_default' => 'nullable|boolean',
+            //
+            'name'  => 'required|string|max:255|unique:categories,name,' . $this->route('id'),
+            'image' => 'nullable|string|max:500',
         ];
     }
 }

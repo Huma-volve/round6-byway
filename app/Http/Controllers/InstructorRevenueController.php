@@ -20,7 +20,9 @@ class InstructorRevenueController extends Controller
         $total_withDrawn = Payout::where('instructor_profile_id', $profile->id)
             ->where('status', 'completed')->sum('amount');
         $available_balance = $total_profits - $total_withDrawn;
-        $last_transaction = Payout::where('instructor_profile_id', $profile->id)->latest()->first()->amount;
+        $last_transaction = optional(
+            Payout::where('instructor_profile_id', $profile->id)->latest()->first()
+        )->amount ?? 0;
         $monthly_revenue = InstructorEarnings::select(
             DB::raw('YEAR(created_at) as year'),
             DB::raw('MONTH(created_at) as month'),

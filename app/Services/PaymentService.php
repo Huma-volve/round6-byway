@@ -20,7 +20,7 @@ class PaymentService
     public function CreatePayment(User $user, int $amount_cents, string $currency, string $payment_method_id)
     {
         return DB::transaction(function () use ($user, $amount_cents, $currency, $payment_method_id) {
-            $order = $user->orders()->latest()->first();
+            $order = $user->orders()->where('status','pending')->latest()->first();
             $payment = $user->payments()->create([
                 'type' => 'payment',
                 'order_id' => $order->id,
