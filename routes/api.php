@@ -9,7 +9,6 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EnrollmentController;
@@ -22,22 +21,43 @@ use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\InstructorRevenueController;
+use App\Http\Controllers\PayoutMethodsController;
+use App\Http\Controllers\PayoutController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-Route::middleware(['auth:sanctum'])->prefix('payment')->group(function(){
-//Payment methods
-Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
-Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']);
-//Payment checkout
-Route::post('/checkout',[PaymentController::class,'checkout']);
-//View Payment History
-Route::get('payment-history',[PaymentController::class,'PaymentHistory']);
 
+Route::middleware(['auth:sanctum', 'role:student'])->prefix('payment')->group(function () {
+    //Payment methods
+    Route::post('/payment-methods', [PaymentMethodController::class, 'store']);
+    Route::get('/user-payment-methods', [PaymentMethodController::class, 'listPaymentMethods']);
+    //Payment checkout
+    Route::post('/checkout', [PaymentController::class, 'checkout']);
+    //View Payment History
+    Route::get('payment-history', [Paymentcontroller::class, 'PaymentHistory']);
+});
+//Instructor Revenue
+Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
+    Route::get('/instructor/revenue', [InstructorRevenueController::class, 'index']);
+});
+//Instructor Payout Methods 
+Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
+    Route::get('/payout-methods', [PayoutMethodsController::class, 'index']);
+    Route::post('/payout-methods', [PayoutMethodsController::class, 'store']);
+    Route::put('/payout-methods/{id}', [PayoutMethodsController::class, 'update']);
+    Route::delete('/payout-methods/{id}', [PayoutMethodsController::class, 'destroy']);
 });
 
 
+//Instructor Payouts (Withdraw)
+Route::middleware(['auth:sanctum', 'role:instructor'])->prefix('payout')->group(function () {
+    Route::get('/withdraw', [PayoutController::class, 'withdrawPage']);
+    Route::post('/withdraw', [PayoutController::class, 'withdraw']);
+});
 
 //reviews
 Route::prefix('reviews')->group(function () {
@@ -91,8 +111,6 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('resend-verification', [AuthController::class, 'resendVerification']);
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword']);
-
-
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
