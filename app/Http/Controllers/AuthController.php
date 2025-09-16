@@ -50,7 +50,9 @@ class AuthController extends Controller
         // }
 
 
-        $code = rand(100000, 999999);
+        //$code = rand(100000, 999999);
+        $code = "000000";
+        
         
 
         VerificationCode::create([

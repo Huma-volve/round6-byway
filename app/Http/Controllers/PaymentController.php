@@ -9,7 +9,7 @@ use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payment;
 use App\Services\PaymentService;
-use App\Trait\AuthTrait;
+use App\AuthTrait;
 
 class PaymentController extends Controller
 {
@@ -23,20 +23,21 @@ class PaymentController extends Controller
     {
 
         $request->validate([
-            'amount_cents' => 'required|numeric|min:50',
-            'currency' => 'string|in:usd,egp',
             'payment_method_id' => 'required|string',
         ]);
         $user = $this->getAuthUser();
         $stripe = new StripeClient(config('services.stripe.secret'));
-        $order_id = $user->orders()->latest()->first()->id;
-        DB::beginTransaction();
+        $order = $user->orders()->latest()->first();
+        $order_id = $order->id;
+        $amount_cents = $order->total_cents;
+        $currency = $order->currency;
+        //$customer_id = $user->paymentMethods()->where('is_default', true)->first()->stripe_payment_method_id;
         try {
             [$payment, $intent] = $this->payments->CreatePayment(
                 $user,
-                $request->amount_cents,
-                $request->currency,
-                $request->payment_method_id
+                $amount_cents,
+                $currency,
+                $request->payment_method_id,
             );
             return response()->json([
                 'status' => 'success',
@@ -54,7 +55,7 @@ class PaymentController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to create payment record: ' . $e->getMessage(),
