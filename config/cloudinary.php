@@ -12,8 +12,8 @@ return [
 
         'cloud' => [
         'cloud_name' => env('CLOUDINARY_CLOUD_NAME', 'dc8lgzgfn'),
-        'key'        => env('CLOUDINARY_API_KEY', '273124967417332'),
-        'secret'     => env('CLOUDINARY_API_SECRET', 'xXKu-2JSqnn9ozzy0lfkjhDXX-s'),
+        'key'        => env('CLOUDINARY_KEY', '273124967417332'),
+        'secret'     => env('CLOUDINARY_SECRET', 'xXKu-2JSqnn9ozzy0lfkjhDXX-s'),
     ],
 
     'url' => [
