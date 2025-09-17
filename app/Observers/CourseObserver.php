@@ -29,10 +29,10 @@ class CourseObserver
     /**
      * Handle the Course "updated" event.
      */
-    public function updated(Course $course): void
-    {
-        //
-    }
+    public function updated($model): void
+{
+    Cache::forget("instructor_course_details_{$model->course_id}");
+}
 
     /**
      * Handle the Course "deleted" event.
