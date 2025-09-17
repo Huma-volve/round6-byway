@@ -7,17 +7,22 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\Api\CourseController as ApiCourseController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\StudentProfileController;
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -137,10 +142,31 @@ Route::get('my-courses',[EnrollmentController::class,'index'])->middleware('auth
 Route::delete('account/close', [AccountController::class, 'closeAccount'])->middleware('auth:sanctum');
 Route::post('reactivate-account',[AccountController::class,'reactivate'])->middleware('auth:sanctum');
 
+//Cart
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('cart/add', [CartController::class, 'addToCart']);
     Route::get('cart', [CartController::class, 'getCart']);
 });
 
+//Search courses
+Route::get('courses/search', [SearchController::class, 'search']);
+
+//course student details
+Route::middleware('auth:sanctum')->get('courses/{id}', [CourseController::class, 'show'])->where('id', '[0-9]+');
+
+//display video
+Route::middleware('auth:sanctum')->post('lessons/{lesson}/complete', [LessonProgressController::class, 'markAsCompleted']);
+
+
+//notifications
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread', [NotificationController::class, 'unread']);
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    Route::delete('/notifications', [NotificationController::class, 'clearAll']);
+});
 
 // Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
