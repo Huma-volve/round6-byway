@@ -69,10 +69,14 @@ class Course extends Model
     }
 
 
-    public function orders()
-{
-    return $this->hasMany(Order::class, 'course_id');
-}
+    // public function orders()
+    // {
+    //     return $this->hasMany(Order::class, 'course_id');
+    // }
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
 
     public function payments()
     {
@@ -80,7 +84,7 @@ class Course extends Model
             Payment::class,
             Enrollment::class,
             'course_id',
-                'order_id',
+            'order_id',
 
         );
     }
