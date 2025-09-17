@@ -9,7 +9,11 @@ use Stripe\StripeClient;
 use Stripe\Stripe;
 use Stripe\PaymentMethod;
 use App\Services\PaymentMethodService;
+<<<<<<< HEAD
 use App\Traits\AuthTrait;
+=======
+use App\AuthTrait;
+>>>>>>> f02d15c1e902d98927e2f94c18eea879ebe5906d
 
 class PaymentMethodController extends Controller
 {
