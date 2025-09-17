@@ -104,6 +104,10 @@ public function verificationCodes()
     {
         return $this->hasMany(Order::class);
     }
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'student_id');
+    }
 
     // A user can have MANY payments THROUGH orders
     public function payments()

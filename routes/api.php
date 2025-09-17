@@ -13,9 +13,9 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\StudentProfileController;
-
 use App\Http\Controllers\Instructor\InstructorCoursesController;
 use App\Http\Controllers\Instructor\InstructorLessonsController;
+use App\Http\Controllers\OrderController;
 
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
@@ -193,3 +193,6 @@ Route::middleware(['auth:sanctum'])
         Route::delete('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'destroy']);
         Route::patch('courses/{course}/lessons/reorder', [InstructorLessonsController::class, 'reorder'])->name('courses.lessons.reorder');
     });
+Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
+    Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'store']);
+});
