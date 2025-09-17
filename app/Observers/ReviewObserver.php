@@ -14,6 +14,9 @@ class ReviewObserver
     public function created(Review $review): void
     {
         Cache::forget('admin_dashboard_stats');
+
+            $instructorId = $review->course->instructor_id;
+    Cache::forget("instructor_reviews_{$instructorId}");
     }
 
 
@@ -24,8 +27,10 @@ class ReviewObserver
     public function updated(Review $review): void
     {
         Cache::forget('admin_dashboard_stats');
-    }
 
+            $instructorId = $review->course->instructor_id;
+    Cache::forget("instructor_reviews_{$instructorId}");
+    }
 
 
     /**

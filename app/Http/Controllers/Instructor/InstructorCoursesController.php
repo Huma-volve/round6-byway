@@ -155,4 +155,40 @@ class InstructorCoursesController extends Controller
             return $this->error($e->getMessage(), $statusCode);
         }
     }
+public function details(Course $course)
+{
+    try {
+        $instructor = auth()->user();
+
+        $this->courseService->ensureOwnership($course, $instructor);
+        $courseDetails = $this->courseService->getCourseDetails($course);
+
+        return $this->success($courseDetails, 'Course details fetched successfully');
+    } catch (Exception $e) {
+        $statusCode = str_contains($e->getMessage(), 'permission') ? 403 : 500;
+        return $this->error($e->getMessage(), $statusCode);
+    }
+}
+
+public function reviews(Request $request)
+{
+    try {
+        $instructor = auth()->user();
+
+        $params = $request->validate([
+            'per_page' => 'sometimes|integer|min:1|max:50',
+        ]);
+
+        $result = $this->courseService->getInstructorReviews($instructor, $params);
+
+        return $this->success($result['data'], 'Reviews fetched successfully', 200, $result['meta']);
+    } catch (Exception $e) {
+        return $this->error('Failed to fetch reviews: ' . $e->getMessage(), 500);
+    }
+}
+
+
+
+
+
 }
