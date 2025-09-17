@@ -9,6 +9,7 @@ use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
 use App\Services\PaymentService;
 use App\AuthTrait;
+use App\Notifications\PaymentSuccessful;
 
 class PaymentController extends Controller
 {
@@ -94,6 +95,8 @@ class PaymentController extends Controller
 
             DB::commit();
             $order->update(['status' => 'paid']);
+            $user->notify(new PaymentSuccessful($payment));
+
 
             return response()->json([
                 'status' => 'success',

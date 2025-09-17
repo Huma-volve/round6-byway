@@ -16,6 +16,7 @@ use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\Instructor\InstructorCoursesController;
 use App\Http\Controllers\Instructor\InstructorLessonsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\NotificationController;
 
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
@@ -195,4 +196,7 @@ Route::middleware(['auth:sanctum'])
     });
 Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'store']);
+});
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
 });
