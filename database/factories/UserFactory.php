@@ -20,18 +20,19 @@ class UserFactory extends Factory
      * @return array<string, mixed>
      */
 
-        protected static ?string $password;
+    protected static ?string $password;
 
     public function definition(): array
     {
         return [
-           'first_name'        => $this->faker->firstName(),
+            'first_name'        => $this->faker->firstName(),
             'last_name'         => $this->faker->lastName(),
             'username'          => $this->faker->unique()->userName(),
             'email'             => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password'          => static:: $password ??= Hash::make('password'),
+            'password'          => static::$password ??= Hash::make('password'),
             'role'              => $this->faker->randomElement(['student', 'instructor', 'admin']),
+            'balance'    => $this->faker->randomFloat(2, 0, 2000), // between 0 and 2000
             'remember_token'    => Str::random(10),
         ];
     }

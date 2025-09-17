@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\AdminPaymentsController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportsController;
@@ -17,7 +18,6 @@ use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentMethodController;  
-use App\Http\Controllers\PaymentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -36,7 +36,7 @@ Route::get('payment-history',[Paymentcontroller::class,'PaymentHistory']);
 
 
 //reviews
-Route::prefix('reviews')->group(function () {
+Route::prefix('reviews')->middleware('auth:sanctum')->group(function () {
 
     Route::get('/', [ReviewController::class, 'index']);
     Route::get('/{id}', [ReviewController::class, 'show']);
@@ -48,7 +48,7 @@ Route::prefix('reviews')->group(function () {
 
 //settings
 
-Route::prefix('settings')->group(function () {
+Route::prefix('settings')->middleware('auth:sanctum')->group(function () {
 
     Route::get('/', [SettingController::class, 'getSettings']);
     Route::put('/{id}', [SettingController::class, 'updateSettings']);
@@ -56,7 +56,7 @@ Route::prefix('settings')->group(function () {
 
 
 //category
-Route::prefix('categories')->group(function () {
+Route::prefix('categories')->middleware('auth:sanctum')->group(function () {
 
     Route::get('/', [CategoryController::class, 'index']);
     Route::get('/{id}', [CategoryController::class, 'show']);
@@ -67,14 +67,25 @@ Route::prefix('categories')->group(function () {
 
 
 //  Routes for Payments
-Route::apiResource('payments', PaymentController::class);
-
-// 🔹 Routes for Reports
-Route::prefix('reports')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('payments', PaymentController::class);
+});
+// Routes for Reports
+Route::prefix('reports')->middleware('auth:sanctum')->group(function () {
     Route::get('/user-growth', [ReportsController::class, 'userGrowth']);
     Route::get('/course-revenue', [ReportsController::class, 'courseRevenue']);
     Route::get('/instructor-performance', [ReportsController::class, 'instructorPerformance']);
     Route::get('/payments/export/pdf', [ReportsController::class, 'exportPdf']);
+});
+
+
+// Payment and Revenue Management
+Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [AdminPaymentsController::class, 'index']);
+    Route::get('/summary', [AdminPaymentsController::class, 'summary']); 
+    Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus']) ->name('admin.payments.updateStatus');
+    Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])->name('admin.payments.show');
+
 });
 
 
