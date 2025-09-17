@@ -44,7 +44,7 @@ Route::middleware(['auth:sanctum', 'role:student'])->prefix('payment')->group(fu
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/instructor/revenue', [InstructorRevenueController::class, 'index']);
 });
-//Instructor Payout Methods 
+//Instructor Payout Methods
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/payout-methods', [PayoutMethodsController::class, 'index']);
     Route::post('/payout-methods', [PayoutMethodsController::class, 'store']);
