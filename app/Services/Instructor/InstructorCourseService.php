@@ -3,11 +3,16 @@
 namespace App\Services\Instructor;
 
 use App\Models\Course;
+use App\Models\Review;
 use App\Models\User;
 use App\Services\MediaUploadService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Exception;
+
+use Illuminate\Support\Facades\Cache;
+
+
 
 class InstructorCourseService
 {
@@ -300,4 +305,93 @@ class InstructorCourseService
             throw new Exception('Cannot edit published course. Please contact admin to unpublish first.');
         }
     }
+public function getCourseDetails(Course $course): array
+{
+
+    return Cache::remember("instructor_course_details_{$course->id}", 900, function () use ($course) {
+        return [
+            'course' => [
+                'id' => $course->id,
+                'title' => $course->title,
+                'description' => $course->description,
+                'price' => $course->price,
+                'image' => $course->image,
+                'status' => $course->status,
+                'level' => $course->level,
+                'lessons_count' => $course->lessons_count,
+                'duration_hours' => $course->duration_hours,
+            ],
+            'enrollment_count' => $course->enrollments()->count(),
+            'reviews' => $course->reviews()->with('user:id,first_name,last_name')
+                ->latest()
+                ->take(10)
+                ->get()
+                ->map(function ($review) {
+                    return [
+                        'id' => $review->id,
+                        'rating' => $review->rating,
+                        'comment' => $review->comment,
+                        'student_name' => $review->user->first_name . ' ' . $review->user->last_name,
+                        'created_at' => $review->created_at->format('Y-m-d'),
+                    ];
+                }),
+            'average_rating' => $course->reviews()->avg('rating') ?? 0,
+        ];
+    });
+}
+
+
+public function getInstructorReviews(User $instructor, array $params = []): array
+{
+    try {
+        // Simple cache for 10 minutes
+        $cacheKey = "instructor_reviews_{$instructor->id}";
+
+        return Cache::remember($cacheKey, 600, function () use ($instructor, $params) {
+            $query = Review::query()
+                ->join('courses', 'reviews.course_id', '=', 'courses.id')
+                ->where('courses.instructor_id', $instructor->id)
+                ->with(['course:id,title', 'user:id,first_name,last_name'])
+                ->select(['reviews.*'])
+                ->latest('reviews.created_at');
+
+            $perPage = min(50, $params['per_page'] ?? 20);
+            $paginator = $query->paginate($perPage);
+
+            return [
+                'data' => collect($paginator->items())->map(function ($review) {
+                    return [
+                        'id' => $review->id,
+                        'course_title' => $review->course->title,
+                        'rating' => $review->rating,
+                        'comment' => $review->comment,
+                        'student_name' => $review->user ?
+                            $review->user->first_name . ' ' . $review->user->last_name :
+                            'Anonymous',
+                        'created_at' => $review->created_at->format('Y-m-d'),
+                    ];
+                })->toArray(),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                ]
+            ];
+        });
+    } catch (Exception $e) {
+        Log::error('Failed to get instructor reviews', [
+            'instructor_id' => $instructor->id,
+            'error' => $e->getMessage()
+        ]);
+        throw $e;
+    }
+}
+
+
+
+
+
+
+
+
 }

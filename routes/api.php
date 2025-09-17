@@ -192,4 +192,7 @@ Route::middleware(['auth:sanctum'])
         Route::patch('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'update']);
         Route::delete('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'destroy']);
         Route::patch('courses/{course}/lessons/reorder', [InstructorLessonsController::class, 'reorder'])->name('courses.lessons.reorder');
+        // New route for course details (statistics)
+        Route::get('courses/{course}/details', [InstructorCoursesController::class, 'details']);
+        Route::get('reviews', [InstructorCoursesController::class, 'reviews']);
     });
