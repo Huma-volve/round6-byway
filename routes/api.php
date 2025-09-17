@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\Dashboard\StatsController;
@@ -7,27 +6,29 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
-use App\Http\Controllers\CartController;
+use App\Http\Controllers\Api\CourseController as ApiCourseController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AdminPaymentsController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\Instructor\InstructorCoursesController;
 use App\Http\Controllers\Instructor\InstructorLessonsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\NotificationController;
-
-use App\Models\StudentProfile;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\NotificationStudentController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\PayoutMethodsController;
 use App\Http\Controllers\PayoutController;
-
-use App\Http\Controllers\PaymentMethodController;  
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -46,7 +47,7 @@ Route::middleware(['auth:sanctum', 'role:student'])->prefix('payment')->group(fu
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/instructor/revenue', [InstructorRevenueController::class, 'index']);
 });
-//Instructor Payout Methods 
+//Instructor Payout Methods
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/payout-methods', [PayoutMethodsController::class, 'index']);
     Route::post('/payout-methods', [PayoutMethodsController::class, 'store']);
@@ -115,6 +116,17 @@ Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function ()
 });
 
 
+    
+    Route::get('/summary', [AdminPaymentsController::class, 'summary']); 
+    
+    Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus'])
+        ->name('admin.payments.updateStatus');
+    Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])
+        ->name('admin.payments.show');
+});
+
+
+
 
 //Auth
 Route::post('register', [AuthController::class, 'register']);
@@ -172,11 +184,32 @@ Route::get('my-courses',[EnrollmentController::class,'index'])->middleware('auth
 Route::delete('account/close', [AccountController::class, 'closeAccount'])->middleware('auth:sanctum');
 Route::post('reactivate-account',[AccountController::class,'reactivate'])->middleware('auth:sanctum');
 
+//Cart
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('cart/add', [CartController::class, 'addToCart']);
     Route::get('cart', [CartController::class, 'getCart']);
 });
 
+//Search courses
+Route::get('courses/search', [SearchController::class, 'search']);
+
+//course student details
+Route::middleware('auth:sanctum')->get('courses/{id}', [CourseController::class, 'show'])->where('id', '[0-9]+');
+
+//display video
+Route::middleware('auth:sanctum')->post('lessons/{lesson}/complete', [LessonProgressController::class, 'markAsCompleted']);
+
+
+//notifications
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationStudentController::class, 'index']);
+    Route::get('/notifications/unread', [NotificationStudentController::class, 'unread']);
+    Route::post('/notifications/{id}/mark-as-read', [NotificationStudentController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-as-read', [NotificationStudentController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationStudentController::class, 'destroy']);
+    Route::delete('/notifications', [NotificationStudentController::class, 'clearAll']);
+});
 
 // Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
 
@@ -205,6 +238,9 @@ Route::middleware(['auth:sanctum'])
         Route::patch('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'update']);
         Route::delete('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'destroy']);
         Route::patch('courses/{course}/lessons/reorder', [InstructorLessonsController::class, 'reorder'])->name('courses.lessons.reorder');
+        // New route for course details (statistics)
+        Route::get('courses/{course}/details', [InstructorCoursesController::class, 'details']);
+        Route::get('reviews', [InstructorCoursesController::class, 'reviews']);
     });
 Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'store']);

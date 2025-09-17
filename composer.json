@@ -7,12 +7,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "algolia/algoliasearch-client-php": "^4.28",
         "cloudinary-labs/cloudinary-laravel": "^3.0",
         "barryvdh/laravel-dompdf": "^3.1",
+        "darkaonline/l5-swagger": "*",
         "laravel/cashier": "^15.7",
-
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.19",
         "laravel/tinker": "^2.9",
         "stripe/stripe-php": "^16.6"
     },
