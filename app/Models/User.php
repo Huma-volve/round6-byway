@@ -120,4 +120,10 @@ public function verificationCodes()
     {
         return $this->hasMany(Wishlist::class);
     }
+
+    public function transactions()
+{
+    return $this->hasMany(\App\Models\Transaction::class);
+}
+
 }
