@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationStudentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -161,12 +161,12 @@ Route::middleware('auth:sanctum')->post('lessons/{lesson}/complete', [LessonProg
 //notifications
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::get('/notifications/unread', [NotificationController::class, 'unread']);
-    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
-    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
-    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
-    Route::delete('/notifications', [NotificationController::class, 'clearAll']);
+    Route::get('/notifications', [NotificationStudentController::class, 'index']);
+    Route::get('/notifications/unread', [NotificationStudentController::class, 'unread']);
+    Route::post('/notifications/{id}/mark-as-read', [NotificationStudentController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-as-read', [NotificationStudentController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationStudentController::class, 'destroy']);
+    Route::delete('/notifications', [NotificationStudentController::class, 'clearAll']);
 });
 
 // Route::get('/admin/dashboard/stats', [StatsController::class, 'index']);
