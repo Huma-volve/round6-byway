@@ -33,11 +33,17 @@ class DatabaseSeeder extends Seeder
             EnrollmentSeeder::class,
             PlatformSettingsSeeder::class,
             // LessonProgressSeeder::class,
-            // ReviewSeeder::class,
+             ReviewSeeder::class,
             // WishlistSeeder::class,
             OrderSeeder::class,
+            PaymentMethodSeeder::class,
+            TransactionSeeder::class,
+
             // OrderItemSeeder::class,
             // PaymentSeeder::class,
         ]);
+
+            // $this->call();
+
     }
 }

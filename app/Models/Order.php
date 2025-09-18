@@ -33,10 +33,10 @@ class Order extends Model
     }
 
 
-    public function course()
-{
-    return $this->belongsTo(Course::class, 'course_id');
-}
+//     public function course()
+// {
+//     return $this->belongsTo(Course::class, 'course_id');
+// }
 
     // Order has MANY payments
     public function payments()
