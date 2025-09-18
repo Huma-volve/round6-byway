@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             EnrollmentSeeder::class,
             PlatformSettingsSeeder::class,
             // LessonProgressSeeder::class,
-            // ReviewSeeder::class,
+             ReviewSeeder::class,
             // WishlistSeeder::class,
             OrderSeeder::class,
             PaymentMethodSeeder::class,

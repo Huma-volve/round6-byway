@@ -94,6 +94,8 @@ class PaymentController extends Controller
 
             DB::commit();
             $order->update(['status' => 'paid']);
+            $user->notify(new PaymentSuccessful($payment));
+
 
             return response()->json([
                 'status' => 'success',
