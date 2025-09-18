@@ -20,6 +20,7 @@ class Course extends Model
         'price',
         'compare_price',
         'image',
+        'cover_public_id',
         'lessons_count',
         'level',
         'duration_hours',
@@ -85,19 +86,23 @@ class Course extends Model
     }
 
 
-    public function orders()
-{
-    return $this->hasMany(Order::class, 'course_id');
-}
+    // public function orders()
+    // {
+    //     return $this->hasMany(Order::class, 'course_id');
+    // }
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
 
     public function payments()
     {
         return $this->hasManyThrough(
             Payment::class,
             Enrollment::class,
-            'course_id',  
-                'order_id',     
-            
+            'course_id',
+            'order_id',
+
         );
     }
 }

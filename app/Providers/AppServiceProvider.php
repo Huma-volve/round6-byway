@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 use App\Models\{Enrollment, Payment, Review, Course};
 use App\Observers\{EnrollmentObserver, PaymentObserver, ReviewObserver, CourseObserver};
+use App\Events\SaveOrder;
+use App\Listeners\RecordInstructorEarnings;
+use Illuminate\Support\Facades\Event;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,5 +36,9 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'Course' => \App\Models\Course::class,
         ]);
+        Event::listen(
+            SaveOrder::class,
+            [RecordInstructorEarnings::class, 'handle']
+        );
     }
 }

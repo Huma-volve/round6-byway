@@ -6,33 +6,38 @@ use Stripe\StripeClient;
 use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
+use App\Services\InstructorEarnings;
 
 class PaymentService
 {
     protected $stripe;
+    protected $instructor_earnings;
     public function __construct()
     {
         $this->stripe = new StripeClient(config('services.stripe.secret'));
+        $this->instructor_earnings = new InstructorEarnings();
     }
     public function CreatePayment(User $user, int $amount_cents, string $currency, string $payment_method_id)
     {
         return DB::transaction(function () use ($user, $amount_cents, $currency, $payment_method_id) {
-            $order_id = $user->orders()->latest()->first()->id;
+            $order = $user->orders()->where('status','pending')->latest()->first();
             $payment = $user->payments()->create([
-                'order_id' => $order_id, // مؤقتًا
+                'type' => 'payment',
+                'order_id' => $order->id,
                 'provider' => 'stripe',
                 'method' => 'card',
                 'amount_cents' => $amount_cents,
-                'currency' => strtoupper($request->currency ?? 'USD'),
+                'currency' => strtoupper($currency ?? 'USD'),
                 'status' => 'initiated',
-                'external_id' => '', // هنحدده بعدين
+                'external_id' => '',
 
             ]);
             $intent = $this->stripe->paymentIntents->create([
-                'amount' => $amount_cents, // Stripe uses cents
+                'amount' => $amount_cents,
                 'currency' => $payment->currency,
+                'customer' => $user->stripe_customer_id,       // <--- مهم
                 'payment_method' => $payment_method_id,
-                'confirm' => true, // confirm immediately
+                'confirm' => true,
                 'payment_method_types' => ['card'],
 
             ]);
@@ -40,6 +45,14 @@ class PaymentService
                 'status' => $intent->status === 'succeeded' ? 'succeeded' : 'failed',
                 'external_id' => $intent->id,
             ]);
+            $payment_id = $payment->id;
+            
+            if ($intent->status == 'succeeded') {
+                event(new \App\Events\SaveOrder($order, $payment_id));
+            }
+
+            //$this->instructor_earnings->storeEarnings($order->id, $payment_id);
+
             return [$payment, $intent];
         });
     }

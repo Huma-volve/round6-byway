@@ -52,4 +52,8 @@ class Payment extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    public function instructorEarnings()
+    {
+        return $this->hasOne(InstructorEarnings::class);
+    }
 }

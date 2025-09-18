@@ -52,8 +52,10 @@ class AuthController extends Controller
             $user->instructorProfile()->create([]);
         }
 
+
         // $code = rand(100000, 999999);
         $code = "000000";
+
 
         VerificationCode::create([
             'user_id' => $user->id,

@@ -8,7 +8,7 @@ use App\Models\Payment;
 use Stripe\StripeClient;
 use Illuminate\Support\Facades\DB;
 use App\Services\PaymentService;
-use App\AuthTrait;
+use App\Traits\AuthTrait;
 
 class PaymentController extends Controller
 {
@@ -67,27 +67,35 @@ class PaymentController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'amount_cents' => 'required|numeric|min:50',
-            'currency' => 'string|in:usd,egp',
             'payment_method_id' => 'required|string',
         ]);
 
         $user = $this->getAuthUser();
         $stripe = new StripeClient(config('services.stripe.secret'));
+        $order = $user->orders()->where('status','pending')->latest()->first();
 
-        // الحصول على آخر طلب (order) للمستخدم
-        $order_id = $user->orders()->latest()->first()->id ?? null;
-
-        DB::beginTransaction();
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No pending order found for this user',
+            ], 400);
+        }
+        $order_id = $order->id;
+        $amount_cents = $order->total_cents;
+        $currency = $order->currency;
+        //$customer_id = $user->paymentMethods()->where('is_default', true)->first()->stripe_payment_method_id;
         try {
             [$payment, $intent] = $this->payments->CreatePayment(
                 $user,
-                $request->amount_cents,
-                $request->currency,
-                $request->payment_method_id
+                $amount_cents,
+                $currency,
+                $request->payment_method_id,
             );
 
             DB::commit();
+            $order->update(['status' => 'paid']);
+            $user->notify(new PaymentSuccessful($payment));
+
 
             return response()->json([
                 'status' => 'success',
@@ -105,7 +113,7 @@ class PaymentController extends Controller
                 ]
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to create payment: ' . $e->getMessage(),

@@ -17,6 +17,8 @@ class Lesson extends Model
         'order',
         'video_url',
         'duration_minutes',
+        'video_public_id',
+        'duration_minutes',
     ];
 
 

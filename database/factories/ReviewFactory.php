@@ -20,12 +20,15 @@ class ReviewFactory extends Factory
     {
         return [
             //
-            'course_id' => Course::factory(), 
-            'user_id'   => User::factory(),   
-            'rating'    => $this->faker->numberBetween(1, 5),
-            'comment'   => $this->faker->sentence(),
-            'status'    => 'Normal',
-            
+            // 'course_id' => Course::factory(),
+            // 'user_id'   => User::factory(),
+            // 'rating'    => $this->faker->numberBetween(1, 5),
+            // 'comment'   => $this->faker->sentence(),
+            // 'status'    => 'Normal',
+            'rating'  => $this->faker->numberBetween(1, 5),
+            'comment' => $this->faker->sentence(),
+            'status'  => 'Normal',
+
         ];
     }
 }

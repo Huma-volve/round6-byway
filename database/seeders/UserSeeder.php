@@ -18,15 +18,19 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'email' => 'admin@example.com',
             'role'  => 'admin',
+             'balance'  => 0,
         ]);
 
         // Instructors
         User::factory(20)->create(['role' => 'instructor'])->each(function ($user) {
+            $user->update([
+                'balance' => fake()->randomFloat(2, 100, 2000), // random balance
+            ]);
             InstructorProfile::factory()->create(['user_id' => $user->id]);
         });
 
         // Students
-        User::factory(100)->create(['role' => 'student'])->each(function ($user) {
+        User::factory(100)->create(['role' => 'student',  'balance' => 0])->each(function ($user) {
             StudentProfile::factory()->create(['user_id' => $user->id]);
         });
     }

@@ -29,4 +29,18 @@ class InstructorProfile extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function earnings()
+    {
+        return $this->hasMany(InstructorEarnings::class);
+    }
+        public function payoutMethods()
+    {
+        return $this->hasMany(PayoutMethod::class);
+    }
+
+    // Instructor payouts
+    public function payouts()
+    {
+        return $this->hasMany(Payout::class);
+    }
 }
