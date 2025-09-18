@@ -40,6 +40,8 @@ class AdminPaymentsController extends Controller
 
 public function updateStatus(HandleWithdrawalRequest $request, Transaction $transaction)
 {
+        //  dd($transaction);
+
     if ($transaction->type !== 'withdrawal') {
         return response()->json([
             'status' => 'error',
