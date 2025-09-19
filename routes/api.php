@@ -109,10 +109,13 @@ Route::prefix('reports')->middleware('auth:sanctum')->group(function () {
 // Payment and Revenue Management
 Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [AdminPaymentsController::class, 'index']);
+    
     Route::get('/summary', [AdminPaymentsController::class, 'summary']); 
-    Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus']) ->name('admin.payments.updateStatus');
-    Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])->name('admin.payments.show');
-
+    
+    Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus'])
+        ->name('admin.payments.updateStatus');
+    Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])
+        ->name('admin.payments.show');
 });
 
 
@@ -124,6 +127,7 @@ Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function ()
     Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])
         ->name('admin.payments.show');
 });
+
 
 
 

@@ -36,7 +36,6 @@ class AdminPaymentsController extends Controller
 
 
 
-
     public function updateStatus(HandleWithdrawalRequest $request, Transaction $transaction)
     {
         //  dd($transaction);
@@ -47,6 +46,17 @@ class AdminPaymentsController extends Controller
                 'message' => 'Only withdrawal transactions can be updated.',
             ], 400);
         }
+
+        // public function updateStatus(HandleWithdrawalRequest $request, Transaction $transaction)
+        // {
+        //     //  dd($transaction);
+
+        //     if ($transaction->type !== 'withdrawal') {
+        //         return response()->json([
+        //             'status' => 'error',
+        //             'message' => 'Only withdrawal transactions can be updated.',
+        //         ], 400);
+        //     }
 
         // Prevent updating if already finalized
         if (in_array($transaction->status, ['completed', 'rejected'])) {
