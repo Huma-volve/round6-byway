@@ -36,8 +36,14 @@ class DatabaseSeeder extends Seeder
              ReviewSeeder::class,
             // WishlistSeeder::class,
             OrderSeeder::class,
+            PaymentMethodSeeder::class,
+            TransactionSeeder::class,
+
             // OrderItemSeeder::class,
             // PaymentSeeder::class,
         ]);
+
+            // $this->call();
+
     }
 }
