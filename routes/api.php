@@ -52,7 +52,7 @@ Route::middleware(['auth:sanctum', 'role:student'])->prefix('payment')->group(fu
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/instructor/revenue', [InstructorRevenueController::class, 'index']);
 });
-//Instructor Payout Methods 
+//Instructor Payout Methods
 Route::middleware(['auth:sanctum', 'role:instructor'])->group(function () {
     Route::get('/payout-methods', [PayoutMethodsController::class, 'index']);
     Route::post('/payout-methods', [PayoutMethodsController::class, 'store']);
@@ -236,6 +236,9 @@ Route::middleware(['auth:sanctum'])
         Route::patch('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'update']);
         Route::delete('courses/{course}/lessons/{lesson}', [InstructorLessonsController::class, 'destroy']);
         Route::patch('courses/{course}/lessons/reorder', [InstructorLessonsController::class, 'reorder'])->name('courses.lessons.reorder');
+        // New route for course details (statistics)
+        Route::get('courses/{course}/details', [InstructorCoursesController::class, 'details']);
+        Route::get('reviews', [InstructorCoursesController::class, 'reviews']);
     });
 Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'store']);
