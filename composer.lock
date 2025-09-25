@@ -6,6 +6,7 @@
     ],
 
     "content-hash": "ef0f5f09c86b963aff6e94d516ace676",
+    "content-hash": "c029cf7685a149cd2fd2420311585081",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
