@@ -38,6 +38,8 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
             PaymentMethodSeeder::class,
             TransactionSeeder::class,
+            InstructorNotificationSeeder::class,
+
 
             // OrderItemSeeder::class,
             // PaymentSeeder::class,
