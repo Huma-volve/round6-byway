@@ -32,7 +32,7 @@ class CategoryController extends Controller
     }
 
 
-      public function store(CategoryRequest $request)
+    public function store(CategoryRequest $request)
     {
         $category = Category::create($request->validated());
 
