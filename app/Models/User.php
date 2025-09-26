@@ -121,6 +121,11 @@ public function verificationCodes()
         return $this->hasMany(Wishlist::class);
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+ 
+
+>>>>>>> 182542fb0953f3f2049c4ef94f260aae1cd8c432
 =======
  
 
