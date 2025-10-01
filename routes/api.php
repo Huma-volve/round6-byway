@@ -24,6 +24,7 @@ use App\Http\Controllers\LessonProgressController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\Instructor\InstructorCoursesController;
 use App\Http\Controllers\Instructor\InstructorLessonsController;
+use App\Http\Controllers\instructor\notificationsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
@@ -122,9 +123,9 @@ Route::prefix('reports')->middleware('auth:sanctum')->group(function () {
 // Payment and Revenue Management
 Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [AdminPaymentsController::class, 'index']);
-    
-    Route::get('/summary', [AdminPaymentsController::class, 'summary']); 
-    
+
+    Route::get('/summary', [AdminPaymentsController::class, 'summary']);
+
     Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus'])
         ->name('admin.payments.updateStatus');
     Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])
@@ -261,6 +262,12 @@ Route::middleware(['auth:sanctum'])
         // New route for course details (statistics)
         Route::get('courses/{course}/details', [InstructorCoursesController::class, 'details']);
         Route::get('reviews', [InstructorCoursesController::class, 'reviews']);
+
+
+        Route::get('notifications', [notificationsController::class, 'index']);
+
+
+
     });
 Route::middleware(['auth:sanctum', 'role:student'])->group(function () {
     Route::post('/checkout', [App\Http\Controllers\OrderController::class, 'store']);
