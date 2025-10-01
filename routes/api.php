@@ -6,7 +6,10 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\InstructorsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\CoursesController;
+<<<<<<< HEAD
+=======
 
+>>>>>>> 182542fb0953f3f2049c4ef94f260aae1cd8c432
 use App\Http\Controllers\Api\CourseController as ApiCourseController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PaymentController;
@@ -29,11 +32,16 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\InstructorRevenueController;
 use App\Http\Controllers\PayoutMethodsController;
 use App\Http\Controllers\PayoutController;
+<<<<<<< HEAD
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+=======
 
 use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+>>>>>>> 182542fb0953f3f2049c4ef94f260aae1cd8c432
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -124,6 +132,20 @@ Route::prefix('admin/payments')->middleware(['auth:sanctum'])->group(function ()
 });
 
 
+<<<<<<< HEAD
+    
+    Route::get('/summary', [AdminPaymentsController::class, 'summary']); 
+    
+    Route::patch('/{transaction}/status', [AdminPaymentsController::class, 'updateStatus'])
+        ->name('admin.payments.updateStatus');
+    Route::get('/{transaction}', [AdminPaymentsController::class, 'show'])
+        ->name('admin.payments.show');
+});
+
+
+
+=======
+>>>>>>> 182542fb0953f3f2049c4ef94f260aae1cd8c432
 
 
 //Auth
